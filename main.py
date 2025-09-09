@@ -14,7 +14,8 @@ class FFN():
 
     def __init__(self, *layers: int):
         '''
-        Three layers, input hidden output
+        Creates a feedforward neural network with given number of layers
+        args: layers: [int], each containing the number of neurons in that layer
         '''
         self.layers = layers 
         self.n_layers = len(layers)

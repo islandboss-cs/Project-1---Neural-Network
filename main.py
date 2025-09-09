@@ -1,6 +1,6 @@
 import pickle
 import matplotlib.pyplot as plt
-
+import numpy as np
 
 ##! PROJECT 1 - Neural Network
 ##? Placeholder task assignments
@@ -10,8 +10,20 @@ import matplotlib.pyplot as plt
 ##* Implement a feedforward neural network (as a class) consisting of 3 layers (input,
 ##* hidden, output layer), where each layer can contain any number of neurons. Use
 ##* the sigmoid function as the activation function.
+class FFN():
 
+    def __init__(self, input: int, hidden: int, output: int):
+        '''
+        Three layers, input hidden output
+        '''
 
+        self.input = input
+        self.hidden = hidden
+        self.output = output
+
+    
+    def sigmoid():
+        pass
 
 
 

@@ -12,21 +12,25 @@ import numpy as np
 ##* the sigmoid function as the activation function.
 class FFN():
 
-    def __init__(self, input: int, hidden: int, output: int):
+    def __init__(self, *layers: int):
         '''
         Three layers, input hidden output
         '''
+        self.layers = layers 
+        self.n_layers = len(layers)
 
-        self.input = input
-        self.hidden = hidden
-        self.output = output
+    def __repr__(self):
+        return f"Neural network contains {self.n_layers} layers. {self.layers}"
 
-    
+   
     def sigmoid():
         pass
 
 
+# Creates a feedforward network with 3 layers, input (28x28), hidden (16), output(10)
+network = FFN(28*28, 16, 10)
 
+print(network)
 ##TODO TASK 2
 ##? Main responsibility: Edvin
 ##* Reading in MNIST data (provided in canvas). The data is separated into training
@@ -36,11 +40,20 @@ with open("mnist.pkl", "rb") as f:
 
 # Training data (50.000), validation data (10.000), test data (10.000)
 (train_images, train_labels), (validation_images, validation_labels), (test_images, test_labels) = data
+print(f"Training data contains {train_images.shape[0]} elements with {train_images.shape[1]} pixels each. (28x28 pixels)")
+print(f"Training labels contain {train_labels.shape[0]} elements, each one labeling its corresponding training image.")
+print()
+print(f"Validation data contains {validation_images.shape[0]} elements with {validation_images.shape[1]} pixels each. (28x28 pixels)")
+print(f"Validation labels contain {validation_labels.shape[0]} elements, each one labeling its corresponding validation image.")
+print()
+print(f"Test data contains {test_images.shape[0]} elements with {test_images.shape[1]} pixels each. (28x28 pixels)")
+print(f"Test labels contain {test_labels.shape[0]} elements, each one labeling its corresponding test image.")
 
+#Visualizing the first training image
 img = train_images[0]
 
-plt.imshow(img.reshape(28, 28), cmap="gray")
-plt.title(f"Label: {train_labels[0]}")
+plt.imshow(img.reshape(28, 28), cmap="viridis")
+plt.title(f"Digit: {train_labels[0]}")
 plt.show()
 
 

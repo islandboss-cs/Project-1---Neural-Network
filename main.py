@@ -27,6 +27,73 @@ class FFN():
     def sigmoid():
         pass
 
+# EXTRA: Possible new FN0N
+# sigmoid and its derivative functions are implemented otside the class
+def f_sigmoid(x):
+    return 1 / (1 + np.exp(-x))
+
+def f_sigmoid_der(x):
+    return f_sigmoid(x)*(1 - f_sigmoid(x))
+
+class newFNN():
+    # This FNN creates layers that will always use sigmoid function as defeault activation function
+    # ga
+
+    def __init__(self, nodes):
+        """
+        nodes: number of nodes for first layer
+        """
+        self.layers = 1  # Maybe is not necesary, but it'll be helpful
+        
+        # Creating matrixes for W and B
+        self.w = []
+        self.b = []
+
+        self.in_nodes = nodes
+        self.out_nodes = nodes
+
+
+    def create_layer(self, nodes_layer):
+        w_layer = np.random.randn(self.out_nodes, nodes_layer)
+        b_layer = np.zeros((nodes_layer))
+
+        self.w.append(w_layer)
+        self.b.append(b_layer)
+        
+        self.out_nodes = nodes_layer
+
+    def forward(self, data):
+        self.a = [data]
+        self.z = []
+
+        # Haven't tried it but it's supose to work
+        for w, b in zip(self.w, self.b):
+            z = self.a[-1] @ w + b
+            a = f_sigmoid(z)
+
+            self.z.append(z)
+            self.a.append[a]
+
+    def backward(self, true_result):
+        grads_w = []
+        grads_b = []
+
+        error = self.a[-1] - true_result
+        delta = error * f_sigmoid_der(self.a[-1])
+
+        for i in reversed(range(len(self.w))):
+            dw = self.a[i].T @ delta / true_result.shape[0]
+            db = np.mean(delta, axis=0, keepdims=True)
+            grads_w.insert(0, dw)
+            grads_b.insert(0, db)
+
+            if i > 0:
+                delta = (delta @ self.w[i].T) * (self.a[i] * (1 - self.a[i]))
+
+    def train_SGD():
+        pass
+
+
 
 # Creates a feedforward network with 3 layers, input (28x28), hidden (16), output(10)
 network = FFN(28*28, 16, 10)
@@ -65,6 +132,9 @@ plt.show()
 ##* plementation of the SGD should allow for different mini-batch sizes and different
 ##* numbers of epochs. An epoch is the complete pass of the training data through
 ##* the learning algorithm.
+
+##* It must be implemented as part of FNN class, at the same time as the backpropagation
+##* algorythm
 
 
 

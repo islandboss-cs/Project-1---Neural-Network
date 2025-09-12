@@ -1,6 +1,10 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
+# Get the data from data_loading
+from data_loading import train_images, train_labels, validation_images, validation_labels, test_images, test_labels
+print(train_images.shape[0], validation_images.shape[0])
+
 ##! PROJECT 1 - Neural Network
 
 ##TODO TASK 1
@@ -77,6 +81,12 @@ class FNN():
                 delta = (delta @ self.w[i].T) * (self.a[i] * (1 - self.a[i]))
 
     def train_SGD():
+		# Take training data, mini-batch size, and number of epochs to train over
+		# Epochs are complete passes over the data.
+		# There should be roughly size(training_data)/mini-batch size batches per epoch
+		
+		
+		
         pass
 
     def __repr__(self):

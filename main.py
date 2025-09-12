@@ -62,7 +62,7 @@ class FNN():
             a = f_sigmoid(z)
 
             self.z.append(z)
-            self.a.append[a]
+            self.a.append(a)
 
     def backward(self, true_result):
         grads_w = []
@@ -79,15 +79,55 @@ class FNN():
 
             if i > 0:
                 delta = (delta @ self.w[i].T) * (self.a[i] * (1 - self.a[i]))
+        
+        return grads_w, grads_b
 
-    def train_SGD():
-		# Take training data, mini-batch size, and number of epochs to train over
-		# Epochs are complete passes over the data.
-		# There should be roughly size(training_data)/mini-batch size batches per epoch
-		
-		
-		
-        pass
+    def train_SGD(self, training_data, training_labels, batch_size, epochs, learning_rate):
+        # Take training data, mini-batch size, and number of epochs to train over
+        # Epochs are complete passes over the data.
+        # Also use a learning rate to scale the gradient shift
+        # There should be roughly size(training_data)/mini-batch size batches per epoch
+        # Number of whole batches, there likely be some left over for a final partial batch
+        whole_batch_num = training_data.shape[0] // batch_size
+        # Repeat for each epoch
+        for e in range(epochs):
+            # For each batch, there will be N whole batches and a final partial batch
+            for b in range(whole_batch_num + 1):
+                # Gradient sum for weights and biases, initialize to zeros
+                weight_gradient_sum = [np.zeros(layer.shape) for layer in self.w]
+                bias_gradient_sum = [np.zeros(layer.shape) for layer in self.b]
+                # Batches of data and labels
+                # If we aren't on that final partial batch, create a full batch
+                # of the desired size
+                if b != whole_batch_num:
+                    training_subset = training_data[b*batch_size:b*(batch_size + 1)]
+                    label_subset = training_labels[b*batch_size:b*(batch_size + 1)]
+                # Else, we are on the final partial batch, so just take the remaining samples
+                else:
+                    training_subset = training_data[b*batch_size:]
+                    label_subset = training_labels[b*batch_size:]
+                # Take each sample, run it forward through the network, get the output
+                # Then run it backward and get the gradients
+                # Add these gradients to a running sum
+                # Mostly there will be full batches, but with one final one, so use the
+                # number of samples to iterate through them
+                current_batch_size = training_subset.shape[0]
+                for i in range(current_batch_size):
+                    sample = training_subset[i]
+                    label = label_subset[i]
+                    # Run forward
+                    self.forward(sample)
+                    # Run backward and get the gradients
+                    grads_w, grads_b = self.backward(label)
+                    # Update running sums, adding numpy arrays at each index componentwise
+                    for j in range(len(grads_w)):
+                        weight_gradient_sum[j] += grads_w[j]
+                        bias_gradient_sum[j] += grads_b[j]
+                # Gradient averages over the batch are done, update the weights and biases
+                for k in range(len(self.w)):
+                    self.w[k] += -1*learning_rate*weight_gradient_sum[k] / current_batch_size
+                    self.b[k] += -1*learning_rate*bias_gradient_sum[k] / current_batch_size
+            
 
     def __repr__(self):
         return f"Contains {self.layers} layers. Input nodes: {self.in_nodes}. Output nodes: {self.out_nodes}"

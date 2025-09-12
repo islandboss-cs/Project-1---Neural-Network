@@ -100,8 +100,8 @@ class FNN():
                 # If we aren't on that final partial batch, create a full batch
                 # of the desired size
                 if b != whole_batch_num:
-                    training_subset = training_data[b*batch_size:b*(batch_size + 1)]
-                    label_subset = training_labels[b*batch_size:b*(batch_size + 1)]
+                    training_subset = training_data[b*batch_size:(b+1)*batch_size]
+                    label_subset = training_labels[b*batch_size:(b+1)*batch_size]
                 # Else, we are on the final partial batch, so just take the remaining samples
                 else:
                     training_subset = training_data[b*batch_size:]

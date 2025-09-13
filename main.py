@@ -65,7 +65,7 @@ class FNN():
             self.z.append(z)
             self.a.append(a)
 
-    def backward(self, true_result):
+    """def backward(self, true_result):
         grads_w = []
         grads_b = []
 
@@ -81,12 +81,68 @@ class FNN():
             if i > 0:
                 delta = (delta @ self.w[i].T) * (self.a[i] * (1 - self.a[i]))
         
+        return grads_w, grads_b"""
+    
+    def back_propagation(self, true_result):
+        """
+        Note: Assumes self.forward has been run on the corresponding sample
+        
+        Parameters
+        ----------
+        true_result : ndarray
+            The 10 element array representing the label of the sample
+
+        Returns
+        -------
+        grads_w : list
+            List of 2d numpy arrays containing the weight gradients for this sample
+        grads_b : list
+            List of numpy arrays containing the bias gradients for this sample
+
+        """
+        # We have activations self.a and z values self.z internal to the class
+        # Initialize lists of gradients of same dimensions as weights and biases
+        grads_w = [np.zeros(layer.shape) for layer in self.w]
+        grads_b = [np.zeros(layer.shape) for layer in self.b]
+        # delta for final layer, to be recursively multiplied
+        # delta final layer is the componentwise product of the derivative of the loss
+        # function w.r.t the activations and the derivative of the activation function 
+        # of the last layer
+        delta = (self.a[-1] - true_result) * f_sigmoid_der(self.z[-1])
+        # Set final grads from delta
+        grads_w[-1] = np.dot(delta, self.a[-2].T)
+        grads_b[-1] = delta
+        # Repeat all the way to the first layer
+        # Note that len(self.z)=len(self.b)=len(self.w)=self.n_layers-1, but len(self.a)==self.n_layers
+        # So we start at index n_layers-3 since we already computed the values for the last layer
+        # and the last index in self.w etc... is n_layers-2
+        for l in range(self.n_layers-3, -1, -1): # range: n_layers-3, n_layers-1,..., 0
+            # Since the lengths of the arrays are different, the index l corresponds to the
+            # index in the weights array. The corresponding index in self.a is l+1
+            # So we need to add 1 to the index whenever referring to the corresponding set
+            # of activations self.a[l+1] that go with self.w[l], self.z[l], self.b[l]
+            
+            # New delta is the matrix multiplication of the transpose of weight matrix
+            # at the deeper level with the previous delta, multiplied componentwise
+            # with the derivative of the activation function w.r.t the z vector
+            d_sig_dz = f_sigmoid_der(self.z[l])
+            delta = np.dot(self.w[l+1].T, delta) * d_sig_dz
+            # Set this next set of gradients at this layer
+            grads_w[l] = np.dot(delta, self.a[l].T) # a[l] not a[l-1] because a offset by inputs in element 0
+            grads_b[l] = delta
+        # A gradient has been computed for every weight and bias
         return grads_w, grads_b
 
     def train_SGD(self, training_data, training_labels, batch_size, epochs, learning_rate):
         # Take training data, mini-batch size, and number of epochs to train over
         # Epochs are complete passes over the data.
         # Also use a learning rate to scale the gradient shift
+        
+        # Randomize training data and labels, keeping indices matching
+        rand_inds = np.random.permutation(len(training_data))
+        training_data = training_data[rand_inds]
+        training_labels = training_labels[rand_inds]
+        
         # There should be roughly size(training_data)/mini-batch size batches per epoch
         # Number of whole batches, there likely be some left over for a final partial batch
         whole_batch_num = training_data.shape[0] // batch_size

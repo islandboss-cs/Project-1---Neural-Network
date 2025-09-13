@@ -17,6 +17,8 @@ def f_sigmoid(x):
 def f_sigmoid_der(x):
     return f_sigmoid(x)*(1 - f_sigmoid(x))
 
+class layer():
+    pass
 
 class FNN():
     # This FNN creates layers that will always use sigmoid function as defeault activation function

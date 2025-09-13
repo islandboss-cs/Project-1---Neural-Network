@@ -10,22 +10,6 @@ import numpy as np
 ##* Implement a feedforward neural network (as a class) consisting of 3 layers (input,
 ##* hidden, output layer), where each layer can contain any number of neurons. Use
 ##* the sigmoid function as the activation function.
-class FFN():
-
-    def __init__(self, *layers: int):
-        '''
-        Creates a feedforward neural network with given number of layers
-        args: layers: [int], each containing the number of neurons in that layer
-        '''
-        self.layers = layers 
-        self.n_layers = len(layers)
-
-    def __repr__(self):
-        return f"Neural network contains {self.n_layers} layers. {self.layers}"
-
-   
-    def sigmoid():
-        pass
 
 # EXTRA: Possible new FN0N
 # sigmoid and its derivative functions are implemented otside the class
@@ -35,14 +19,10 @@ def f_sigmoid(x):
 def f_sigmoid_der(x):
     return f_sigmoid(x)*(1 - f_sigmoid(x))
 
-<<<<<<< HEAD
-class newFNN():
-=======
 class layer():
     pass
 
 class FNN():
->>>>>>> try
     # This FNN creates layers that will always use sigmoid function as defeault activation function
     # ga
 

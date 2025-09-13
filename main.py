@@ -134,6 +134,8 @@ class FNN():
 
 # Creates a feedforward network with 3 layers, input (28x28), hidden (16), output(10)
 
+
+##! TESTING THE FNN CLASS
 network = FNN([784, 16, 10])
 print(network)
 network.create_layer(19)

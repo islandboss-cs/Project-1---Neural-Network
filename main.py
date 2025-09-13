@@ -5,6 +5,17 @@ import numpy as np
 from data_loading import train_images, train_labels, validation_images, validation_labels, test_images, test_labels
 print(train_images.shape[0], validation_images.shape[0])
 
+def vectorize_label(label):
+    # Convert integer label to vector of length 10 with 1 at label index
+    vec = np.zeros(10)
+    vec[label] = 1
+    return vec
+
+# Convert labels to vectors of length 10
+train_labels = np.array([vectorize_label(label) for label in train_labels])
+validation_labels = np.array([vectorize_label(label) for label in validation_labels])
+test_labels = np.array([vectorize_label(label) for label in test_labels])
+
 ##! PROJECT 1 - Neural Network
 
 ##TODO TASK 1
@@ -19,6 +30,7 @@ def f_sigmoid(x):
 
 def f_sigmoid_der(x):
     return f_sigmoid(x)*(1 - f_sigmoid(x))
+
 
 
 class FNN():
@@ -175,7 +187,7 @@ class FNN():
                     # Run forward
                     self.forward(sample)
                     # Run backward and get the gradients
-                    grads_w, grads_b = self.backward(label)
+                    grads_w, grads_b = self.back_propagation(label)
                     # Update running sums, adding numpy arrays at each index componentwise
                     for j in range(len(grads_w)):
                         weight_gradient_sum[j] += grads_w[j]

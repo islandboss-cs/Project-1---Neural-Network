@@ -51,6 +51,7 @@ class FNN():
         self.b.append(b_layer)
         
         self.out_nodes = nodes_layer
+        self.layers.append(nodes_layer)
 
     def forward(self, data):
         self.a = [data]
@@ -130,7 +131,7 @@ class FNN():
             
 
     def __repr__(self):
-        return f"Contains {self.layers} layers. Input nodes: {self.in_nodes}. Output nodes: {self.out_nodes}"
+        return f"Contains {len(self.layers)} layers. Input nodes: {self.in_nodes}. Output nodes: {self.out_nodes}. All nodes: {self.layers}"
 
 # Creates a feedforward network with 3 layers, input (28x28), hidden (16), output(10)
 

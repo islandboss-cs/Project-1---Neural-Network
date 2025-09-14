@@ -1,21 +1,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
-# Get the data from data_loading
-from data_loading import train_images, train_labels, validation_images, validation_labels, test_images, test_labels
-print(train_images.shape[0], validation_images.shape[0])
-
-def vectorize_label(label):
-    # Convert integer label to vector of length 10 with 1 at label index
-    vec = np.zeros(10)
-    vec[label] = 1
-    return vec
-
-# Convert labels to vectors of length 10
-train_labels = np.array([vectorize_label(label) for label in train_labels])
-validation_labels = np.array([vectorize_label(label) for label in validation_labels])
-test_labels = np.array([vectorize_label(label) for label in test_labels])
-
 ##! PROJECT 1 - Neural Network
 
 ##TODO TASK 1
@@ -32,7 +17,6 @@ def f_sigmoid_der(x):
     return f_sigmoid(x)*(1 - f_sigmoid(x))
 
 
-
 class FNN():
     # This FNN creates layers that will always use sigmoid function as defeault activation function
     # ga
@@ -42,40 +26,53 @@ class FNN():
         nodes (array): number of nodes for each layer
         """
 
-        self.layers = list(nodes)
-        print(self.layers)
-        self.n_layers = len(nodes) 
-        print(self.n_layers)
+        # Initialize the model with input layer
+        # This doesn't have a weight matrix or bias vector
+        self.layers = [nodes[0]]
+        #print(self.layers)
+        self.n_layers = 1
+        #print(self.n_layers)
         
         # Creating matrixes for W and B
         self.w = []
         self.b = []
-
-        self.in_nodes = nodes[0]
-        self.out_nodes = nodes[-1]
+        
+        self.in_nodes = self.out_nodes = nodes[0]
+        
+        # Create the remaining layers, each of these does have a weight matrix and bias vector
+        for num_nodes in nodes[1:]:
+            self.create_layer(num_nodes)
 
 
     def create_layer(self, nodes_layer):
-        w_layer = np.random.randn(self.out_nodes, nodes_layer)
-        b_layer = np.zeros((nodes_layer))
+        # Create a layer with weight matrix of size nodes_layer x self.out_nodes
+        # This way, a step is computed as w x previous activations + b
+        w_layer = np.random.randn(nodes_layer, self.out_nodes)
+        # Create nodes_layer biases, one for each node
+        b_layer = np.ones((nodes_layer, 1))
 
         self.w.append(w_layer)
         self.b.append(b_layer)
         
         self.out_nodes = nodes_layer
         self.layers.append(nodes_layer)
+        self.n_layers += 1
 
     def forward(self, data):
         self.a = [data]
         self.z = []
 
-        # Haven't tried it but it's supose to work
+        # Take the input data vector and multiply it through each layer, one after the other
         for w, b in zip(self.w, self.b):
-            z = self.a[-1] @ w + b
+            # previous activations x weights + biases
+            z = np.matmul(w, self.a[-1]) + b
             a = f_sigmoid(z)
 
             self.z.append(z)
             self.a.append(a)
+        
+        # Return output of last layer
+        return self.a[-1]
 
     """def backward(self, true_result):
         grads_w = []
@@ -120,10 +117,14 @@ class FNN():
         # delta final layer is the componentwise product of the derivative of the loss
         # function w.r.t the activations and the derivative of the activation function 
         # of the last layer
+        #print(f"a shape: {self.a[-1].shape}, true_result shape: {true_result.shape}, sig_der shape: {f_sigmoid_der(self.z[-1]).shape}")
         delta = (self.a[-1] - true_result) * f_sigmoid_der(self.z[-1])
+        #print(f"delta shape after: {delta.shape}")
+        #print(f"Previous activation transpose shape: {self.a[-2].T.shape}")
         # Set final grads from delta
-        grads_w[-1] = np.dot(delta, self.a[-2].T)
+        grads_w[-1] = np.matmul(delta, self.a[-2].T)
         grads_b[-1] = delta
+        #print(f"After grads calc: weight shape: {grads_w[-1].shape}, bias shape: {grads_b[-1].shape}")
         # Repeat all the way to the first layer
         # Note that len(self.z)=len(self.b)=len(self.w)=self.n_layers-1, but len(self.a)==self.n_layers
         # So we start at index n_layers-3 since we already computed the values for the last layer
@@ -138,9 +139,9 @@ class FNN():
             # at the deeper level with the previous delta, multiplied componentwise
             # with the derivative of the activation function w.r.t the z vector
             d_sig_dz = f_sigmoid_der(self.z[l])
-            delta = np.dot(self.w[l+1].T, delta) * d_sig_dz
+            delta = np.matmul(self.w[l+1].T, delta) * d_sig_dz
             # Set this next set of gradients at this layer
-            grads_w[l] = np.dot(delta, self.a[l].T) # a[l] not a[l-1] because a offset by inputs in element 0
+            grads_w[l] = np.matmul(delta, self.a[l].T) # a[l] not a[l-1] because a offset by inputs in element 0
             grads_b[l] = delta
         # A gradient has been computed for every weight and bias
         return grads_w, grads_b
@@ -172,9 +173,12 @@ class FNN():
                     training_subset = training_data[b*batch_size:(b+1)*batch_size]
                     label_subset = training_labels[b*batch_size:(b+1)*batch_size]
                 # Else, we are on the final partial batch, so just take the remaining samples
+                # Only do this if there are at least enough for half a batch
                 else:
                     training_subset = training_data[b*batch_size:]
                     label_subset = training_labels[b*batch_size:]
+                    if len(training_subset) < batch_size / 2:
+                        continue
                 # Take each sample, run it forward through the network, get the output
                 # Then run it backward and get the gradients
                 # Add these gradients to a running sum
@@ -185,9 +189,9 @@ class FNN():
                     sample = training_subset[i]
                     label = label_subset[i]
                     # Run forward
-                    self.forward(sample)
+                    _output = self.forward(sample.reshape(-1, 1))
                     # Run backward and get the gradients
-                    grads_w, grads_b = self.back_propagation(label)
+                    grads_w, grads_b = self.back_propagation(label.reshape(-1, 1))
                     # Update running sums, adding numpy arrays at each index componentwise
                     for j in range(len(grads_w)):
                         weight_gradient_sum[j] += grads_w[j]
@@ -197,18 +201,29 @@ class FNN():
                     self.w[k] += -1*learning_rate*weight_gradient_sum[k] / current_batch_size
                     self.b[k] += -1*learning_rate*bias_gradient_sum[k] / current_batch_size
             
-
+    
+    def evaluate(self, test_data, test_labels, verbose=False):
+        # Run the model on each sample in the test data and compare the output to the correct one
+        # Assume test_labels are ints of the correct output for the sample
+        # Return an array of the model outputs on the testing data
+        outputs = np.array([self.forward(sample.reshape(-1, 1)) for sample in test_data])
+        int_outputs = np.array([self.vector_to_label(vec) for vec in outputs])
+        if verbose:
+            #print(int_outputs)
+            #print(test_labels)
+            correct_bools = int_outputs == test_labels
+            total_correct = np.sum(correct_bools)
+            print(f"Performance on test data: {total_correct}/{len(correct_bools)}, {total_correct*100/len(correct_bools):.2f}% acc")
+        return outputs
+    
+        
+    def vector_to_label(self, vec):
+        return int(np.argmax(vec))
+    
     def __repr__(self):
         return f"Contains {len(self.layers)} layers. Input nodes: {self.in_nodes}. Output nodes: {self.out_nodes}. All nodes: {self.layers}"
 
-# Creates a feedforward network with 3 layers, input (28x28), hidden (16), output(10)
 
-
-##! TESTING THE FNN CLASS
-network = FNN([784, 16, 10])
-print(network)
-network.create_layer(19)
-print(network)
 ##TODO TASK 2
 
 

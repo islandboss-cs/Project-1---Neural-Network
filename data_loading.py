@@ -1,5 +1,6 @@
 import pickle
 import matplotlib.pyplot as plt
+import numpy as np
 
 ##* Reading in MNIST data (provided in canvas). The data is separated into training
 ##* data (50 000), validation data (10 000), and test data (10 000).
@@ -21,6 +22,9 @@ if __name__ == "__main__":
     print(f"Test labels contain {test_labels.shape[0]} elements, each one labeling its corresponding test image.")
     
     print(f"labels are: {train_labels[:10]}, just integer values")
+    
+    print(f"training shape: {train_labels.shape}\tsample shape: {train_images[0].shape}\tvalue in sample: {train_images[0, 1]}")
+    print(f"type of data: {type(train_images)}, type of sample: {type(train_images[0])}")
     
     #Visualizing the first training image
     img = train_images[0]

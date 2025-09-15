@@ -194,6 +194,14 @@ class FNN():
             print(f"Performance on test data: {total_correct}/{len(correct_bools)}, {total_correct*100/len(correct_bools):.2f}% acc")
         return outputs
     
+    #Gradient at the input, maybe works ?
+    def input_gradient(self, x, y):
+        self.forward(x)
+
+        delta = (self.a[-1] - y) * f_sigmoid_der(self.z[-1])
+        for l in range(self.n_layers-3, -1, -1):
+            delta = np.matmul(self.w[l+1].T, delta) * f_sigmoid_der(self.z[l])
+        return np.matmul(self.w[0].T, delta) * f_sigmoid_der(self.a[0])
         
     def vector_to_label(self, vec):
         return int(np.argmax(vec))

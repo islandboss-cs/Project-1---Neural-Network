@@ -3,7 +3,7 @@ from layer import Layer
 from losses import f_mse, f_mse_der, f_mse2, f_mse2_der
 
 class newFNN():
-    def __init__(self, loss = "mse2"):
+    def __init__(self, in_nodes=None, loss = "mse2"):
         if loss == "mse":
             self.loss = f_mse
             self.loss_derivative = f_mse_der
@@ -13,10 +13,18 @@ class newFNN():
         else:
             print(f"Loss function {loss} not accepted.")
             return
+        if in_nodes == None:
+            print(f"You must initialize the FNN with a number of nodes.")
+            return
 
         self.layers = []
 
-    def create_layer(self, in_nodes, out_nodes, activation="sigmoid"):
+    def create_layer(self, out_nodes, activation="sigmoid"):
+        if not self.layers:
+            in_nodes = self.input_size
+        else:
+            in_nodes = self.layers[-1].W.shape[0]  
+
         self.layers.append(Layer(in_nodes, out_nodes, activation))
 
     def forward_propagation(self, data):

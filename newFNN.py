@@ -65,7 +65,7 @@ class newFNN():
 
         # Repeat for each epoch
         for epoch in range(epochs):
-            rand_inds = np.arrange(training_data.shape[0])
+            rand_inds = np.arange(training_data.shape[0])
             np.random.shuffle(rand_inds)
             training_data = training_data[rand_inds]
             training_labels = training_labels[rand_inds]
@@ -84,7 +84,7 @@ class newFNN():
                     training_subset = training_data[b*batch_size:]
                     label_subset = training_labels[b*batch_size:]
                 # To avoid an empty batch
-                if training_subset[0] == 0:
+                if training_subset.shape[0] == 0:
                     continue
 
                 # Forward propagation

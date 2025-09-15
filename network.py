@@ -1,15 +1,6 @@
-import matplotlib.pyplot as plt
 import numpy as np
+import matplotlib.pyplot as plt
 
-##! PROJECT 1 - Neural Network
-
-##TODO TASK 1
-##* Implement a feedforward neural network (as a class) consisting of 3 layers (input,
-##* hidden, output layer), where each layer can contain any number of neurons. Use
-##* the sigmoid function as the activation function.
-
-# EXTRA: Possible new FN0N
-# sigmoid and its derivative functions are implemented otside the class
 def f_sigmoid(x):
     return 1 / (1 + np.exp(-x))
 
@@ -25,14 +16,13 @@ class FNN():
         """
         nodes (array): number of nodes for each layer
         """
-
         # Initialize the model with input layer
         # This doesn't have a weight matrix or bias vector
         self.layers = [nodes[0]]
         #print(self.layers)
         self.n_layers = 1
         #print(self.n_layers)
-        
+        self.accuracy = []
         # Creating matrixes for W and B
         self.w = []
         self.b = []
@@ -74,24 +64,6 @@ class FNN():
         # Return output of last layer
         return self.a[-1]
 
-    """def backward(self, true_result):
-        grads_w = []
-        grads_b = []
-
-        error = self.a[-1] - true_result
-        delta = error * f_sigmoid_der(self.a[-1])
-
-        for i in reversed(range(len(self.w))):
-            dw = self.a[i].T @ delta / true_result.shape[0]
-            db = np.mean(delta, axis=0, keepdims=True)
-            grads_w.insert(0, dw)
-            grads_b.insert(0, db)
-
-            if i > 0:
-                delta = (delta @ self.w[i].T) * (self.a[i] * (1 - self.a[i]))
-        
-        return grads_w, grads_b"""
-    
     def back_propagation(self, true_result):
         """
         Note: Assumes self.forward has been run on the corresponding sample
@@ -146,7 +118,7 @@ class FNN():
         # A gradient has been computed for every weight and bias
         return grads_w, grads_b
 
-    def train_SGD(self, training_data, training_labels, batch_size, epochs, learning_rate):
+    def train_SGD(self, training_data, training_labels, batch_size, epochs, learning_rate, test_data=None, test_labels=None):
         # Take training data, mini-batch size, and number of epochs to train over
         # Epochs are complete passes over the data.
         # Also use a learning rate to scale the gradient shift
@@ -161,6 +133,8 @@ class FNN():
         whole_batch_num = training_data.shape[0] // batch_size
         # Repeat for each epoch
         for e in range(epochs):
+            if test_data is not None:
+                self.evaluate(test_data, test_labels, True)
             # For each batch, there will be N whole batches and a final partial batch
             for b in range(whole_batch_num + 1):
                 # Gradient sum for weights and biases, initialize to zeros
@@ -200,8 +174,10 @@ class FNN():
                 for k in range(len(self.w)):
                     self.w[k] += -1*learning_rate*weight_gradient_sum[k] / current_batch_size
                     self.b[k] += -1*learning_rate*bias_gradient_sum[k] / current_batch_size
-            
-    
+# x matches the length of accuracy
+
+        self.plot_accuracy(epochs, batch_size, learning_rate)
+        
     def evaluate(self, test_data, test_labels, verbose=False):
         # Run the model on each sample in the test data and compare the output to the correct one
         # Assume test_labels are ints of the correct output for the sample
@@ -213,55 +189,29 @@ class FNN():
             #print(test_labels)
             correct_bools = int_outputs == test_labels
             total_correct = np.sum(correct_bools)
+
+            self.accuracy.append(total_correct*100/len(correct_bools))
             print(f"Performance on test data: {total_correct}/{len(correct_bools)}, {total_correct*100/len(correct_bools):.2f}% acc")
         return outputs
     
         
     def vector_to_label(self, vec):
         return int(np.argmax(vec))
-    
+    def plot_accuracy(self, epochs, batch_size, learning_rate):
+        x = np.arange(1, len(self.accuracy) + 1)
+        
+        plt.plot(x, self.accuracy, marker="o")
+        plt.title(f"epochs: {epochs}, batch size: {batch_size}, learning rate: {learning_rate}")
+        
+        # y-axis in %
+        plt.ylim(0, 100)
+        plt.yticks(range(0, 101, epochs))
+        
+        # grid
+        plt.grid(axis="y", linestyle="--", alpha=0.7)
+        plt.xlabel("Epoch")
+        plt.ylabel("Accuracy (%)")
+        
+        plt.show()
     def __repr__(self):
         return f"Contains {len(self.layers)} layers. Input nodes: {self.in_nodes}. Output nodes: {self.out_nodes}. All nodes: {self.layers}"
-
-
-##TODO TASK 2
-
-
-
-##TODO TASK 3
-##* Implement the stochastic gradient method (SGD) to train the network. The im-
-##* plementation of the SGD should allow for different mini-batch sizes and different
-##* numbers of epochs. An epoch is the complete pass of the training data through
-##* the learning algorithm.
-
-
-
-
-##TODO TASK 4
-##* Implement the backpropagation algorithm (used in SGD to effectively calculate
-##* the derivative).
-
-
-
-
-##TODO TASK 5
-##* Train and test the accuracy of the network for the following parameters:
-##* • Input layer with 784 + 1 neurons
-##* • hidden layer with 30 + 1 neurons
-##* • Output layer with 10 neurons
-##* As loss function use the quadratic function (square loss)
-##* 1/2n ∑_x ||h_w(x) - y||_2 ^2
-##* where (x, y) is a pair of training data, n the amount of used training data, and hw
-##* represents the neural network.
-
-
-
-
-##TODO TASK 6
-##* Print an output of the learning success per epoch.
-
-
-
-
-##TODO TASK 7
-##* Implement an attack on the trained neural network.

@@ -1,5 +1,5 @@
 ####### Test the code for loading, training a model
-from main import FNN
+from network import FNN
 import numpy as np
 # Get the data from data_loading
 from data_loading import train_images, train_labels, validation_images, validation_labels, test_images, test_labels
@@ -48,9 +48,9 @@ network.evaluate(test_images, test_labels, verbose=True)
 
 training_data = train_images
 training_labels = train_labels
-batch_size = 100
-epochs = 10
-learning_rate = .25
+batch_size = 10
+epochs = 30
+learning_rate = 3
 network.train_SGD(training_data, training_labels, batch_size, epochs, learning_rate)
 
 # Run the sample through the network again

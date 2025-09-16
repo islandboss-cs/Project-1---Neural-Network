@@ -17,6 +17,7 @@ Colin:
 Nicolas:
 
 
+--------------------------------
 
 Project tasks:
 
@@ -33,6 +34,8 @@ Task 5: Complete
 Task 6: Complete
 
 Task 7: Complete
+
+--------------------------------
 
 Extension tasks:
 

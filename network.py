@@ -206,20 +206,24 @@ class FNN():
     def vector_to_label(self, vec):
         return int(np.argmax(vec))
     def plot_accuracy(self, epochs, batch_size, learning_rate):
+        #x: epochs
+        #y: accuracy of predictions per epoch
         x = np.arange(1, len(self.accuracy) + 1)
-        
         plt.plot(x, self.accuracy, marker="o")
+
         plt.title(f"epochs: {epochs}, batch size: {batch_size}, learning rate: {learning_rate}")
         
         # y-axis in %
-        plt.ylim(0, 100)
-        plt.yticks(range(0, 101, epochs))
-        
+        plt.ylim(0, 101)
+        plt.yticks(range(0, 101, 10))
+        plt.xticks(x)
         # grid
         plt.grid(axis="y", linestyle="--", alpha=0.7)
         plt.xlabel("Epoch")
         plt.ylabel("Accuracy (%)")
         
         plt.show()
+
+    
     def __repr__(self):
         return f"Contains {len(self.layers)} layers. Input nodes: {self.in_nodes}. Output nodes: {self.out_nodes}. All nodes: {self.layers}"

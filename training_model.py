@@ -11,9 +11,9 @@ from data_loading import train_images, train_labels, validation_images, validati
 network = FNN([784,16, 10])
 
 # Training parameters
-batch_size = 10
-epochs = 5
-learning_rate = 3
+batch_size = 100
+epochs = 10
+learning_rate = 1
 # Train the model
 network.train_SGD(train_images, train_labels, batch_size, epochs, learning_rate, test_images, test_labels)
 
@@ -23,24 +23,31 @@ _outputs = network.evaluate(test_images, test_labels, verbose=True)
 
 
 ##Work in progress attack
-x = test_images[0].reshape(784,1)
+#Inputs the first image in test_data to the network
+data_index = 1
+x = test_images[data_index].reshape(784,1)
 y = np.zeros((10,1))     
-y[test_labels[0]] = 1
+y[test_labels[data_index]] = 1
 orig_pred = np.argmax(network.forward(x))
+
+#Gets the gradient at the input layer
 grad_input = network.input_gradient(x, y)
-epsilon = 0.3 
-x_adv = x + epsilon * np.sign(grad_input)
-adv_pred = np.argmax(network.forward(x_adv))
 
+#Modifying the image to fool the network
+epsilon = 0.2
+x_atk = x + epsilon * np.sign(grad_input)
+atk_pred = np.argmax(network.forward(x_atk))
 
-plt.figure(figsize=(8,4))
+#Plot results
+plt.figure(figsize=(10,6))
+plt.title(f"epochs: {epochs}, batch size: {batch_size}, learning rate: {learning_rate}, epsilon: {epsilon}")
 plt.subplot(1,2,1)
-plt.title(f"Original\nPrediction: {orig_pred}, True: {test_labels[0]}")
+plt.title(f"Original\nPrediction: {orig_pred}, Correct: {test_labels[data_index]}")
 plt.imshow(x.reshape(28,28), cmap='gray')
 plt.axis('off')
 plt.subplot(1,2,2)
-plt.title(f"Adversarial\nPrediction: {adv_pred}")
-plt.imshow(x_adv.reshape(28,28), cmap='gray')
+plt.title(f"Attack\nPrediction: {atk_pred}, Correct: {test_labels[data_index]}")
+plt.imshow(x_atk.reshape(28,28), cmap='gray')
 plt.axis('off')
 
 plt.show()

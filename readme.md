@@ -13,7 +13,7 @@ Edvin: Data loading, results, graphics, attack
 
 Martin: Data loading, network extension, graphics, 
 
-Rafael: Network, activation functions, testing, results
+Rafael: Debugging, testing, SGD, results
 
 Colin: Backpropagation, SGD, data loading
 

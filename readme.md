@@ -11,9 +11,9 @@ Data is read from data_loading.py
 
 Edvin: Data loading, results, graphics, attack
 
-Martin:
+Martin: Data loading, network extension, graphics, 
 
-Rafael: 
+Rafael: Network, activation functions, testing, results
 
 Colin: Backpropagation, SGD, data loading
 

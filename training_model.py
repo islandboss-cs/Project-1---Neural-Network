@@ -11,18 +11,18 @@ from data_loading import train_images, train_labels, validation_images, validati
 network = FNN([784,16, 10])
 
 # Training parameters
-batch_size = 100
-epochs = 10
-learning_rate = 1
+batch_size = 10
+epochs = 1
+learning_rate = 2.5
 # Train the model
 network.train_SGD(train_images, train_labels, batch_size, epochs, learning_rate, test_images, test_labels)
-
+print(train_images[0].shape)
 # Evaluate the model
 print("Model after training:")
 _outputs = network.evaluate(test_images, test_labels, verbose=True)
 
 
-##Work in progress attack
+#Attack on the network by modifying the input data slightly
 #Inputs the first image in test_data to the network
 data_index = 1
 x = test_images[data_index].reshape(784,1)
@@ -34,9 +34,15 @@ orig_pred = np.argmax(network.forward(x))
 grad_input = network.input_gradient(x, y)
 
 #Modifying the image to fool the network
-epsilon = 0.2
+epsilon = 0.05
 x_atk = x + epsilon * np.sign(grad_input)
 atk_pred = np.argmax(network.forward(x_atk))
+
+# Use attack data to train the network
+attack_image = [x_atk]
+attack_label = [test_labels[data_index]]
+#Needs more work
+#network.train_SGD(attack_image, attack_label, 1, 1, 1, test_images, test_labels)
 
 #Plot results
 plt.figure(figsize=(10,6))

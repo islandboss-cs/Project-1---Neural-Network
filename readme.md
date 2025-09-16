@@ -15,3 +15,35 @@ Rafael:
 Colin:
 
 Nicolas:
+
+
+
+Project tasks:
+
+Task 1: Complete
+
+Task 2: Complete
+
+Task 3: Complete
+
+Task 4: Complete
+
+Task 5: Complete
+
+Task 6: Complete
+
+Task 7: Complete
+
+Extension tasks:
+
+Task 1: Complete 
+
+Task 2: Complete (needs more work, comparisons)
+
+Task 3: Complete
+
+Task 4: Complete
+
+Task 5: Complete (needs more work)
+
+Task 6: Complete (needs more work)

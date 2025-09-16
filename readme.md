@@ -6,6 +6,9 @@ Extended network is in newFNN.py (any number of hidden layers, any number of neu
 
 Data is read from data_loading.py
 
+--------------------------------
+
+
 Edvin: Data loading, results, graphics, attack
 
 Martin:

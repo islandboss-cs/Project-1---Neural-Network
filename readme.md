@@ -13,11 +13,11 @@ Edvin: Data loading, results, graphics, attack
 
 Martin:
 
-Rafael:
+Rafael: 
 
-Colin:
+Colin: Backpropagation, SGD, data loading
 
-Nicolas:
+Nicolas: Network extension, loss functions, layers
 
 
 --------------------------------
